@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Leave Management System</title>
+    <link rel="stylesheet" href="/css/index.css">
+</head>
+<body>
+    <h1>Welcome to the Leave Management System</h1>
+    <p>Use the links below to navigate through the application:</p>
+    <ul>
+        <li><a th:href="@{/employees}">Employee List</a></li>
+        <li><a th:href="@{/employees/add}">Add Employee</a></li>
+        <li><a th:href="@{/leaves}">Leave Applications</a></li>
+        <li><a th:href="@{/leaves/apply}">Apply for Leave</a></li>
+        <li><a th:href="@{/managers}">Manager List</a></li>
+        <li><a th:href="@{/managers/add}">Add Manager</a></li>
+    </ul>
+</body>
+</html>

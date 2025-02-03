@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Apply for Leave</title>
+    <link rel="stylesheet" href="/css/brown-theme.css"> <!-- Link to your CSS file -->
+</head>
+<body>
+    <h1>Apply for Leave</h1>
+    <form th:action="@{/leaves}" th:object="${leaveApplication}" method="post">
+        <label>Leave Type:</label>
+        <input type="text" th:field="*{leaveType}" required><br>
+        <label>Start Date:</label>
+        <input type="date" th:field="*{startDate}" required><br>
+        <label>End Date:</label>
+        <input type="date" th:field="*{endDate}" required><br>
+        <label>Reason:</label>
+        <textarea th:field="*{reason}" required></textarea><br>
+        <button type="submit">Apply</button>
+    </form>
+    <div class="navigation-links">
+        <a th:href="@{/leaves}">Back to Leave List</a>
+        <a th:href="@{/}">Back to Home</a> <!-- Link to the Index page -->
+    </div>
+</body>
+</html>

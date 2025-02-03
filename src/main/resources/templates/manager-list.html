@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manager List</title>
+    <link rel="stylesheet" href="/css/list.css">
+</head>
+<body>
+<h1>Manager List</h1>
+<a th:href="@{/managers/add}">Add Manager</a>
+<table border="1">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Department</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="manager : ${managers}">
+            <td th:text="${manager.id}"></td>
+            <td th:text="${manager.name}"></td>
+            <td th:text="${manager.department}"></td>
+        </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,79 @@
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f1ea; /* Light brown background */
+    color: #4a3f35; /* Dark brown text */
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+h1 {
+    color: #6b5b4d; /* Medium brown heading */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Link Styles */
+a {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 10px 15px;
+    background-color: #8b7355; /* Light brown button */
+    color: #ffffff; /* White text */
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+a:hover {
+    background-color: #6b5b4d; /* Darker brown on hover */
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+    background-color: #ffffff; /* White background for the table */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd; /* Light gray border */
+}
+
+th {
+    background-color: #8b7355; /* Light brown header */
+    color: #ffffff; /* White text */
+    font-weight: bold;
+}
+
+tr:hover {
+    background-color: #f9f9f9; /* Light gray hover effect */
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    a {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+}

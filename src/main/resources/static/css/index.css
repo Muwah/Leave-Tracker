@@ -1,0 +1,76 @@
+/* General Styles */
+body {
+    font-family: 'Georgia', serif;
+    background-color: #f4f1ea; /* Light beige background */
+    color: #5d4037; /* Dark brown text */
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #4e342e; /* Darker brown for headings */
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+p {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #6d4c41; /* Medium brown for paragraphs */
+    margin-bottom: 2rem;
+}
+
+/* Navigation Links */
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 auto;
+    max-width: 600px;
+    text-align: center;
+}
+
+li {
+    margin: 1rem 0;
+}
+
+a {
+    text-decoration: none;
+    color: #8d6e63; /* Light brown for links */
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    border: 2px solid #8d6e63; /* Light brown border */
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    display: inline-block;
+    width: 200px;
+}
+
+a:hover {
+    background-color: #8d6e63; /* Light brown background on hover */
+    color: #fff; /* White text on hover */
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Container for Centering Content */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: #fff; /* White background for content */
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Footer (Optional) */
+footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding: 1rem 0;
+    background-color: #5d4037; /* Dark brown footer */
+    color: #fff;
+    font-size: 0.9rem;
+}

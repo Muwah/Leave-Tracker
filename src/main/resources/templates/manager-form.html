@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Manager</title>
+    <link rel="stylesheet" href="/css/add.css">
+</head>
+<body>
+    <h1>Add New Manager</h1>
+    
+    <form th:action="@{/managers}" th:object="${manager}" method="post">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" th:value="${manager.name}" required>
+        <br><br>
+        
+        <label for="department">Department:</label>
+        <input type="text" id="department" name="department" th:value="${manager.department}" required>
+        <br><br>
+
+        
+        <br><br>
+
+        <button type="submit">Save Manager</button>
+    </form>
+    <div class="navigation-links">
+        <a th:href="@{/managers}">Back to Manager List</a>
+        <a th:href="@{/}">Back to Home</a> <!-- Link to the Index page -->
+    </div>
+</body>
+</html>
