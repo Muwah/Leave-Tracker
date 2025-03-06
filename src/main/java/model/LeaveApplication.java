@@ -1,5 +1,7 @@
 package model;
 
+//import java.util.Date;
+
 import jakarta.persistence.*;
 //import java.util.List;
 
@@ -19,7 +21,7 @@ public class LeaveApplication {
     private String endDate;
     private String reason;
     @Enumerated(EnumType.STRING)
-    private LeaveStatus status; // e.g., PENDING, APPROVED, REJECTED
+    private LeaveStatus status= LeaveStatus.PENDING; // e.g., PENDING, APPROVED, REJECTED
 
     @ManyToOne
     @JoinColumn(name = "employee_id")
@@ -44,6 +46,10 @@ public class LeaveApplication {
 	public void setLeaveType(String leaveType) {
 		this.leaveType = leaveType;
 	}
+
+	
+
+	
 
 	public String getStartDate() {
 		return startDate;

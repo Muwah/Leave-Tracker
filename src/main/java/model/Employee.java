@@ -65,6 +65,15 @@ public class Employee {
 	public void setLeaveApplications(List<LeaveApplication> leaveApplications) {
 		this.leaveApplications = leaveApplications;
 	}
+
+	@Override
+	public String toString() {
+		return "Employee [id=" + id + ", name=" + name + ", department=" + department + ", designation=" + designation
+				+ ", email=" + email + ", leaveApplications=" + leaveApplications + ", getId()=" + getId()
+				+ ", getName()=" + getName() + ", getDepartment()=" + getDepartment() + ", getDesignation()="
+				+ getDesignation() + ", getEmail()=" + getEmail() + ", getLeaveApplications()=" + getLeaveApplications()
+				+ "]";
+	}
     
     
 

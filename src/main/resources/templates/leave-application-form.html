@@ -7,6 +7,32 @@
 <body>
     <h1>Apply for Leave</h1>
     <form th:action="@{/leaves}" th:object="${leaveApplication}" method="post">
+		 <!-- Employee Dropdown -->
+    <div class="select-wrapper">
+        <label>Employee:</label>
+        <select th:field="*{employee.id}" required>
+            <option value="">Select Employee</option>
+            <option th:each="employee : ${employees}" 
+                    th:value="${employee.id}" 
+                    th:text="${employee.name + ' (' + employee.department + ')'}">
+            </option>
+        </select>
+    </div>
+
+    <!-- Manager Dropdown -->
+    <div class="select-wrapper">
+        <label>Manager:</label>
+        <select th:field="*{manager.id}" required>
+            <option value="">Select Manager</option>
+            <option th:each="manager : ${managers}" 
+                    th:value="${manager.id}" 
+                    th:text="${manager.name}">
+            </option>
+        </select>
+    </div>
+        
+
+        <!-- Leave Details -->
         <label>Leave Type:</label>
         <input type="text" th:field="*{leaveType}" required><br>
         <label>Start Date:</label>

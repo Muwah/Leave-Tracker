@@ -56,6 +56,35 @@ textarea:focus {
     outline: none;
 }
 
+/* Custom Dropdown Arrow */
+.select-wrapper {
+    position: relativea;
+    width: 100%;
+    
+}
+
+.select-wrapper::after {
+    content: "▼"; /* Custom arrow */
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    pointer-events: none; /* Ensure clicks go to the select element */
+    color: #8d6e63; /* Light brown arrow */
+    font-size: 0.8rem;
+}
+
+/* Dropdown Options */
+option {
+    padding: 0.5rem;
+    background-color: #fff; /* White background for options */
+    color: #5d4037; /* Dark brown text */
+}
+
+option:hover {
+    background-color: #8d6e63; /* Light brown background on hover */
+    color: #fff; /* White text on hover */
+}
 /* Submit Button */
 button[type="submit"] {
     display: block;

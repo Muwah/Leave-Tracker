@@ -1,9 +1,29 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Leave Applications</title>
     <link rel="stylesheet" href="/css/list.css">
+    <style>
+        /* Add some basic styling for the buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .approve-btn {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .reject-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 <h1>Leave Applications</h1>
@@ -12,21 +32,41 @@
     <thead>
         <tr>
             <th>ID</th>
+            <th>Employee</th>
+            <th>Manager</th>
             <th>Leave Type</th>
             <th>Start Date</th>
             <th>End Date</th>
             <th>Reason</th>
             <th>Status</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-        <tr th:each="leave : ${leaves}">
+		<tr th:if="${leaves.empty}">
+        <td colspan="8">No leave applications found.</td>
+    </tr>
+        <tr th:each="leave : ${leaves}"th:unless="${leaves.empty}">
             <td th:text="${leave.id}"></td>
+            <td th:text="${leave.employee?.name + ' (' + leave.employee?.department + ')'}"></td>
+            <td th:text="${leave.manager?.name}"></td> <!-- Display manager's name -->
             <td th:text="${leave.leaveType}"></td>
             <td th:text="${leave.startDate}"></td>
             <td th:text="${leave.endDate}"></td>
             <td th:text="${leave.reason}"></td>
             <td th:text="${leave.status}"></td>
+            <td>
+                <div class="action-buttons">
+                    <!-- Approve Button -->
+                    <form th:action="@{/leaves/{id}/approve(id=${leave.id})}" method="post" style="display: inline;">
+                        <button type="submit" class="approve-btn">Approve</button>
+                    </form>
+                    <!-- Reject Button -->
+                    <form th:action="@{/leaves/{id}/reject(id=${leave.id})}" method="post" style="display: inline;">
+                        <button type="submit" class="reject-btn">Reject</button>
+                    </form>
+                </div>
+            </td>
         </tr>
     </tbody>
 </table>

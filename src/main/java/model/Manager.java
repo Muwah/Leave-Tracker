@@ -48,6 +48,13 @@ public class Manager {
 		this.leaveApplications = leaveApplications;
 	}
 
+	@Override
+	public String toString() {
+		return "Manager [id=" + id + ", name=" + name + ", department=" + department + ", leaveApplications="
+				+ leaveApplications + ", getId()=" + getId() + ", getName()=" + getName() + ", getDepartment()="
+				+ getDepartment() + ", getLeaveApplications()=" + getLeaveApplications() + "]";
+	}
+
     // Getters and Setters
     
     
