@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Dashboard - Leave Management System</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            background-color: #fefaf6;
+            color: #5d4037;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .welcome-card {
+            background-color: #fff8f0;
+            padding: 1.5rem 2rem;
+            border-left: 6px solid #8d6e63;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #4e342e;
+            font-size: 1.8rem;
+        }
+
+        h2 {
+            margin-top: 2rem;
+            color: #6d4c41;
+        }
+
+        .logout-btn {
+            background-color: #8d6e63;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+        }
+
+        .logout-btn:hover {
+            background-color: #5d4037;
+        }
+
+        .nav-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 1rem;
+        }
+
+        .nav-buttons a {
+            display: block;
+            background-color: #fff;
+            padding: 0.75rem;
+            border: 2px solid #8d6e63;
+            text-align: center;
+            text-decoration: none;
+            color: #6d4c41;
+            border-radius: 8px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .nav-buttons a:hover {
+            background-color: #8d6e63;
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background-color: #efebe9;
+            color: #5d4037;
+        }
+
+        .role-select {
+            padding: 6px;
+            border-radius: 4px;
+        }
+
+        .btn-assign {
+            padding: 6px 12px;
+            background-color: #8d6e63;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-assign:hover {
+            background-color: #5d4037;
+        }
+    </style>
+</head>
+<body>
+
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="logout-btn">Logout</button>
+    </form>
+
+    <div class="welcome-card" th:if="${admin.present}">
+        <h1>Welcome, <span th:text="${admin.get().employee?.name} ?: 'Admin Name'">Admin Name</span></h1>
+        <p>
+            Department: <span th:text="${admin.get().employee?.department} ?: 'N/A'">Admin Dept</span> |
+            Designation: <span th:text="${admin.get().employee?.designation} ?: 'N/A'">Admin Title</span>
+        </p>
+    </div>
+
+    <!-- Section: Navigation -->
+    <h2>Application Navigation</h2>
+    <div class="nav-buttons">
+        <a th:href="@{/employees}">Employee List</a>
+        <a th:href="@{/employees/add}">Add Employee</a>
+        <a th:href="@{/managers}">Manager List</a>
+        <a th:href="@{/managers/add}">Add Manager</a>
+    </div>
+
+    <!-- Section: Role Assignment -->
+    <h2>Assign Roles to Users</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Designation</th>
+                <th>Current Role</th>
+                <th>Assign New Role</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.employee.name}">John Doe</td>
+                <td th:text="${user.employee.department}">IT</td>
+                <td th:text="${user.employee.designation}">Officer</td>
+                <td th:text="${user.role}">EMPLOYEE</td>
+                <td>
+                    <form th:action="@{/admin/assign-role}" method="post">
+                        <input type="hidden" name="userId" th:value="${user.id}" />
+                        <select name="role" class="role-select" required>
+                            <option value="EMPLOYEE" th:selected="${user.role == 'EMPLOYEE'}">EMPLOYEE</option>
+                            <option value="HR" th:selected="${user.role == 'HR'}">HR</option>
+                            <option value="ADMIN" th:selected="${user.role == 'ADMIN'}">ADMIN</option>
+                        </select>
+                        <button type="submit" class="btn-assign">Assign</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>

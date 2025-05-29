@@ -1,74 +1,256 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Leave Applications</title>
+    <title>HR Dashboard - Leave Management</title>
+    <meta charset="UTF-8">
     <link rel="stylesheet" href="/css/list.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
     <style>
-        /* Add some basic styling for the buttons */
+        body {
+            font-family: 'Georgia', serif;
+            background-color: #f4f1ea;
+            color: #5d4037;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        h1, h2 {
+            color: #4e342e;
+            text-align: center;
+        }
+
+        .top-actions {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        button.logout {
+            background-color: #8d6e63;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+         a {
+            display: inline-block;
+            margin-bottom: 1rem;
+            padding: 0.5rem 1rem;
+            color: #8d6e63;
+            border: 2px solid #8d6e63;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #8d6e63;
+            color: #fff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e0dcd3;
+        }
+
+        th {
+            background-color: #8d6e63;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f5f0;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .status-APPROVED { background-color: #4caf50; color: #fff; }
+        .status-PENDING { background-color: #ff9800; color: #fff; }
+        .status-REJECTED { background-color: #f44336; color: #fff; }
+
         .action-buttons {
             display: flex;
             gap: 10px;
         }
-        .approve-btn {
-            background-color: green;
-            color: white;
+
+        .approve-btn, .reject-btn {
+            padding: 6px 12px;
             border: none;
-            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
             cursor: pointer;
         }
-        .reject-btn {
-            background-color: red;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
+
+        .approve-btn { background-color: #4caf50; color: white; }
+        .approve-btn:hover { background-color: #388e3c; }
+
+        .reject-btn { background-color: #f44336; color: white; }
+        .reject-btn:hover { background-color: #d32f2f; }
+
+        .message-box {
+            text-align: center;
+            margin-bottom: 1.5rem;
         }
+
+        .alert-success {
+            color: #2e7d32;
+            background-color: #e8f5e9;
+            padding: 0.8rem;
+            border-radius: 6px;
+        }
+
+        .alert-error {
+            color: #c62828;
+            background-color: #fbe9e7;
+            padding: 0.8rem;
+            border-radius: 6px;
+        }
+
+        .calendar-container {
+            background-color: #fff3e0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 40px;
+        }
+
+        .calendar {
+            width: 100%;
+        }
+
     </style>
 </head>
 <body>
-<h1>Leave Applications</h1>
-<a th:href="@{/leaves/apply}">Apply for Leave</a>
-<table border="1">
-    <thead>
+
+    <h1>HR Dashboard</h1>
+
+    <div class="top-actions">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="logout">Logout</button>
+        </form>
+    </div>
+
+    <!-- Flash messages -->
+    <div class="message-box">
+        <div th:if="${success}" class="alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert-error" th:text="${error}"></div>
+    </div>
+
+    <!-- LEAVE APPLICATIONS TABLE -->
+    <h2>Leave Applications</h2>
+    <table>
+        <thead>
         <tr>
             <th>ID</th>
             <th>Employee</th>
             <th>Manager</th>
             <th>Leave Type</th>
-            <th>Start Date</th>
-            <th>End Date</th>
+            <th>Start</th>
+            <th>End</th>
             <th>Reason</th>
             <th>Status</th>
             <th>Actions</th>
         </tr>
-    </thead>
-    <tbody>
-		<tr th:if="${leaves.empty}">
-        <td colspan="8">No leave applications found.</td>
-    </tr>
-        <tr th:each="leave : ${leaves}"th:unless="${leaves.empty}">
-            <td th:text="${leave.id}"></td>
-            <td th:text="${leave.employee?.name + ' (' + leave.employee?.department + ')'}"></td>
-            <td th:text="${leave.manager?.name}"></td> <!-- Display manager's name -->
-            <td th:text="${leave.leaveType}"></td>
-            <td th:text="${leave.startDate}"></td>
-            <td th:text="${leave.endDate}"></td>
-            <td th:text="${leave.reason}"></td>
-            <td th:text="${leave.status}"></td>
-            <td>
-                <div class="action-buttons">
-                    <!-- Approve Button -->
-                    <form th:action="@{/leaves/{id}/approve(id=${leave.id})}" method="post" style="display: inline;">
-                        <button type="submit" class="approve-btn">Approve</button>
-                    </form>
-                    <!-- Reject Button -->
-                    <form th:action="@{/leaves/{id}/reject(id=${leave.id})}" method="post" style="display: inline;">
-                        <button type="submit" class="reject-btn">Reject</button>
-                    </form>
-                </div>
-            </td>
+        </thead>
+        <tbody>
+        <tr th:if="${leaves.empty}">
+            <td colspan="9" style="text-align:center;">No leave applications found.</td>
         </tr>
-    </tbody>
-</table>
+
+        <th:block th:each="leave : ${leaves}">
+            <tr>
+                <td th:text="${leave.id}">1</td>
+                <td>
+		            <a href="javascript:void(0);" th:onclick="'toggleDetails(' + ${leave.id} + ')'">
+		                <span th:text="${leave.employee?.name + ' (' + leave.employee?.department + ')'}"></span>
+		            </a>
+        		</td>
+                <td th:text="${leave.employee?.name}">John Doe</td>
+                <td th:text="${leave.manager?.name}">Jane Smith</td>
+                <td th:text="${leave.leaveType}">ANNUAL</td>
+                <td th:text="${leave.startDate}">2025-06-01</td>
+                <td th:text="${leave.endDate}">2025-06-10</td>
+                <td th:text="${leave.reason}">Family trip</td>
+                <td>
+                    <span th:text="${leave.status}" th:class="'badge status-' + ${leave.status}">APPROVED</span>
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        <form th:action="@{/leaves/{id}/approve(id=${leave.id})}" method="post">
+                            <button type="submit" class="approve-btn">Approve</button>
+                        </form>
+                        <form th:action="@{/leaves/{id}/reject(id=${leave.id})}" method="post">
+                            <button type="submit" class="reject-btn">Reject</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            <!-- Section II Computation Row -->
+    <tr th:id="'details-' + ${leave.id}" style="display: none;">
+        <td colspan="9">
+            <div style="background: #fefefe; padding: 15px; border: 1px dashed #ccc;">
+                <h4>SECTION II - COMPUTATION OF LEAVE</h4>
+                <p><strong>Name:</strong> <span th:text="${leave.employee?.name}"></span></p>
+                <p><strong>Department:</strong> <span th:text="${leave.employee?.department}"></span></p>
+                <p><strong>Designation:</strong> <span th:text="${leave.employee?.designation}"></span></p>
+                <p><strong>Leave Applied For:</strong> <span th:text="${leave.leaveType}"></span></p>
+                <p><strong>Leave Due:</strong> <span th:text="${leave.computation.leaveDue}">0</span> days</p>
+                <p><strong>Less Leave Taken:</strong> <span th:text="${leave.computation.leaveTaken}">0</span> days</p>
+                <p><strong>Balance:</strong> <span th:text="${leave.computation.balance}">0</span> days</p>
+                <p><strong>Date:</strong> <span th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}"></span></p>
+                <p><strong>Signature of Officer:</strong> ________________________</p>
+            </div>
+        </td>
+    </tr>
+        </th:block>
+        </tbody>
+    </table>
+    <script>
+    function toggleDetails(id) {
+        const row = document.getElementById("details-" + id);
+        row.style.display = row.style.display === "none" ? "table-row" : "none";
+    }
+</script>
+
+    <!-- LEAVE ROSTER CALENDAR -->
+    <div class="calendar-container">
+        <h2>Annual Leave Roster Calendar</h2>
+        <input type="text" id="rosterCalendar" class="calendar" placeholder="Select dates to view leave plans" readonly>
+        <ul>
+            <li th:each="roster : ${rosters}">
+                <span th:text="${#temporals.format(roster.leaveDate, 'dd MMM yyyy')}"></span> -
+                <span th:text="${roster.employee.name}">John</span> (
+                <span th:text="${roster.leaveType}">ANNUAL</span>)
+                <span th:if="${!roster.confirmed}" style="color:red;">(Pending)</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        flatpickr("#rosterCalendar", {
+            mode: "multiple",
+            dateFormat: "Y-m-d",
+            inline: true
+        });
+    </script>
+
 </body>
 </html>

@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 
 
-@SpringBootApplication(scanBasePackages = {"controllers", "services", "model", "repository"})
+@SpringBootApplication(scanBasePackages = {"controllers", "services", "model", "repository","config","DTO","security"})
 @EntityScan(basePackages = "model")  // Add this to scan JPA entities
 @EnableJpaRepositories(basePackages = "repository")
 

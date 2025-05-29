@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Error</title>
-</head>
+<head><title>Error</title></head>
 <body>
-    <h1>Error Page</h1>
-    <p th:text="${message}">An error occurred.</p>
-    <a href="/">Go Back to Home</a>
+    <h1>Oops! An error occurred.</h1>
+    <p th:text="${message}">Unknown error</p>
+    <a th:href="@{/}">Go Home</a>
 </body>
 </html>

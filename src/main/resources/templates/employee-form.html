@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Add Employee</title>
+    <title th:text="${employee.id == null} ? 'Add Employee' : 'Edit Employee'">Add Employee</title>
     <link rel="stylesheet" href="/css/add.css"> <!-- Link to your CSS file -->
 </head>
 <body>
-    <h1>Add Employee</h1>
-    <form th:action="@{/employees}" th:object="${employee}" method="post">
+    <h1 th:text="${employee.id == null} ? 'Add Employee' : 'Edit Employee'">Add Employee</h1>
+    <form th:action="${employee.id == null} ? @{/employees} : @{/employees/{id}/edit(id=${employee.id})}" 
+          th:object="${employee}" method="post">
         <label>Name:</label>
         <input type="text" th:field="*{name}" required><br>
         <label>Department:</label>
@@ -15,11 +16,19 @@
         <input type="text" th:field="*{designation}" required><br>
         <label>Email:</label>
         <input type="email" th:field="*{email}" required><br>
-        <button type="submit">Save</button>
+        <label>Salary Scale:</label>
+<select th:field="*{salaryScale}" required>
+    <option value="">-- Select Salary Scale --</option>
+    <option th:each="scale : ${salaryScales}"
+            th:value="${scale}"
+            th:text="${scale}">SalaryScale</option>
+</select><br>
+
+        <button type="submit" th:text="${employee.id == null} ? 'Save' : 'Update'">Save</button>
     </form>
     <div class="navigation-links">
         <a th:href="@{/employees}">Back to Employee List</a>
-        <a th:href="@{/}">Back to Home</a> <!-- Link to the Index page -->
+         
     </div>
 </body>
 </html>

@@ -1,71 +1,183 @@
 package services;
 
-import java.util.List;
+import exception.LeaveApplicationNotFoundException;
+import model.*;
+import repository.LeaveApplicationRepository;
+import repository.LeavePolicyRepository;
 
+//import org.hibernate.mapping.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import exception.LeaveApplicationNotFoundException;
-import model.LeaveApplication;
-import model.LeaveStatus;
-import repository.LeaveApplicationRepository;
+import DTO.LeaveComputation;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class LeaveApplicationService {
+
     @Autowired
     private LeaveApplicationRepository leaveApplicationRepository;
 
+    @Autowired
+    private LeavePolicyRepository leavePolicyRepository;
+    
+    
+
     /**
-     * Applies for leave and sets the status to PENDING by default.
-     *
-     * @param leaveApplication The leave application to create.
-     * @return The created leave application.
+     * Apply for leave. Validates against policy rules.
      */
     public LeaveApplication applyForLeave(LeaveApplication leaveApplication) {
-        leaveApplication.setStatus(LeaveStatus.PENDING); // Ensure status is PENDING
+        validateLeaveApplication(leaveApplication);
+
+        leaveApplication.setStatus(LeaveStatus.PENDING);
         return leaveApplicationRepository.save(leaveApplication);
     }
 
     /**
-     * Retrieves all leave applications for a specific employee.
-     *
-     * @param employeeId The ID of the employee.
-     * @return A list of leave applications.
+     * Validate leave application against policy rules.
      */
+    private void validateLeaveApplication(LeaveApplication application) {
+        if (application.getStartDate().isAfter(application.getEndDate())) {
+            throw new IllegalArgumentException("Start date cannot be after end date.");
+        }
+
+        // Check overlapping leave
+        List<LeaveApplication> overlaps = leaveApplicationRepository
+        	    .findOverlappingLeaveForEmployee(
+        	        application.getEmployee().getId(),
+        	        application.getStartDate(),
+        	        application.getEndDate()
+        	    );
+
+        	if (!overlaps.isEmpty()) {
+        	    throw new IllegalStateException("This leave overlaps with an existing application.");
+        	}
+
+
+        // Check policy constraints
+        Optional<LeavePolicy> optionalPolicy = leavePolicyRepository
+                .findByLeaveTypeAndApplicableToScale(application.getLeaveType(), application.getEmployee().getSalaryScale());
+        System.out.println("Leave Type: " + application.getLeaveType());
+        System.out.println("Salary Scale: " + application.getEmployee().getSalaryScale());
+
+
+        if (optionalPolicy.isEmpty()) {
+            optionalPolicy = leavePolicyRepository
+                .findByLeaveTypeWithFallback(application.getLeaveType(), application.getEmployee().getSalaryScale());
+        }
+
+        LeavePolicy policy = optionalPolicy.orElseThrow(() ->
+                new IllegalArgumentException("No leave policy defined for this type and salary scale."));
+
+
+        if (application.getDaysApplied() > policy.getMaxAllowedDaysPerYear()) {
+            throw new IllegalArgumentException("Requested leave days exceed the maximum allowed: " + policy.getMaxAllowedDaysPerYear());
+        }
+
+        if (policy.isRequiresMedicalReport() && application.getLeaveType() == LeaveType.SICK
+                && (application.getReason() == null || application.getReason().isBlank())) {
+            throw new IllegalArgumentException("Medical reason required for sick leave.");
+        }
+
+        // Future: Add checks for gender-specific leave like maternity/paternity
+    }
+
     public List<LeaveApplication> getLeaveApplicationsByEmployee(Long employeeId) {
         return leaveApplicationRepository.findByEmployeeId(employeeId);
     }
 
-    /**
-     * Retrieves all leave applications for a specific manager.
-     *
-     * @param managerId The ID of the manager.
-     * @return A list of leave applications.
-     */
     public List<LeaveApplication> getLeaveApplicationsByManager(Long managerId) {
         return leaveApplicationRepository.findByManagerId(managerId);
     }
 
-    /**
-     * Updates the status of a leave application.
-     *
-     * @param leaveId The ID of the leave application to update.
-     * @param status  The new status (APPROVED or REJECTED).
-     * @return The updated leave application.
-     * @throws LeaveApplicationNotFoundException If the leave application is not found.
-     * @throws IllegalStateException            If the leave application is already in a final state.
-     */
-    public LeaveApplication updateLeaveStatus(Long leaveId, LeaveStatus status) {
+    public List<LeaveApplication> getLeaveApplicationsByToOfficer(Long officerId) {
+        return leaveApplicationRepository.findByToOfficerId(officerId);
+    }
+
+    public List<LeaveApplication> getLeaveApplicationsByThruOfficer(Long officerId) {
+        return leaveApplicationRepository.findByThruOfficer(officerId);
+    }
+
+    public List<LeaveApplication> getAllPendingApplications() {
+        return leaveApplicationRepository.findByStatus(LeaveStatus.PENDING);
+    }
+    public List<LeaveApplication> getAllLeaveApplications() {
+        return leaveApplicationRepository.findAll(); // No filter
+    }
+
+    public LeaveApplication updateLeaveStatus(Long leaveId, LeaveStatus newStatus) {
         LeaveApplication leaveApplication = leaveApplicationRepository.findById(leaveId)
                 .orElseThrow(() -> new LeaveApplicationNotFoundException("Leave application not found with id: " + leaveId));
 
-        // Check if the leave application is already in a final state
         if (leaveApplication.getStatus() == LeaveStatus.APPROVED || leaveApplication.getStatus() == LeaveStatus.REJECTED) {
-            throw new IllegalStateException("Leave application is already in a final state and cannot be modified.");
+            throw new IllegalStateException("Leave application is already finalized.");
         }
 
-        // Update the status
-        leaveApplication.setStatus(status);
+        leaveApplication.setStatus(newStatus);
         return leaveApplicationRepository.save(leaveApplication);
     }
+    
+    public LeaveComputation computeLeaveComputation(LeaveApplication leaveApplication) {
+        Optional<LeavePolicy> optionalPolicy = leavePolicyRepository
+                .findByLeaveTypeAndApplicableToScale(
+                        leaveApplication.getLeaveType(),
+                        leaveApplication.getEmployee().getSalaryScale());
+
+        if (optionalPolicy.isEmpty()) {
+            optionalPolicy = leavePolicyRepository.findByLeaveTypeWithFallback(
+                    leaveApplication.getLeaveType(),
+                    leaveApplication.getEmployee().getSalaryScale());
+        }
+
+        int due = optionalPolicy.map(LeavePolicy::getMaxAllowedDaysPerYear).orElse(0);
+
+        int currentYear = LocalDate.now().getYear();
+        int taken = leaveApplicationRepository.sumDaysTakenThisYear(
+                leaveApplication.getEmployee().getId(),
+                leaveApplication.getLeaveType(),
+                currentYear
+        );
+
+        return new LeaveComputation(due, taken);
+    }
+
+
+    public Map<LeaveType, Integer> getRemainingLeaveDays(Employee employee) {
+        Map<LeaveType, Integer> remaining = new HashMap<>();
+
+        for (LeaveType type : LeaveType.values()) {
+            Optional<LeavePolicy> policyOpt = leavePolicyRepository.findByLeaveTypeAndApplicableToScale(type, employee.getSalaryScale());
+
+            // fallback to any generic policy if specific one not found
+            if (policyOpt.isEmpty()) {
+            	policyOpt = leavePolicyRepository.findFirstByLeaveType(type);
+
+            }
+
+            int due = policyOpt.map(LeavePolicy::getMaxAllowedDaysPerYear).orElse(0);
+
+            int taken = leaveApplicationRepository.sumDaysTakenThisYear(
+                    employee.getId(),
+                    type,
+                    LocalDate.now().getYear()
+            );
+
+            remaining.put(type, Math.max(due - taken, 0));
+        }
+
+        return remaining;
+    }
+    
+    public LeaveApplication getLeaveById(Long id) {
+        return leaveApplicationRepository.findById(id)
+                .orElseThrow(() -> new LeaveApplicationNotFoundException("Leave application not found with ID: " + id));
+    }
+
+
+
 }

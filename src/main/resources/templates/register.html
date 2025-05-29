@@ -1,15 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login</title>
+    <title>Register</title>
     <meta charset="UTF-8">
     <style>
         body {
             font-family: 'Georgia', serif;
-             /* Update path here */
-            background-repeat: no-repeat;
-            background-size: contain;
-            background-position: center;
             background-color: #f4f1ea;
             color: #5d4037;
             margin: 0;
@@ -20,12 +16,12 @@
             height: 100vh;
         }
 
-        .login-container {
-            background-color: rgba(255, 255, 255, 0.95); /* slightly transparent */
+        .register-container {
+            background-color: #fff;
             padding: 2rem 3rem;
             border-radius: 12px;
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-            max-width: 400px;
+            max-width: 450px;
             width: 100%;
         }
 
@@ -43,7 +39,8 @@
         }
 
         input[type="text"],
-        input[type="password"] {
+        input[type="password"],
+        select {
             width: 100%;
             padding: 0.75rem;
             border: 2px solid #8d6e63;
@@ -56,8 +53,8 @@
             box-sizing: border-box;
         }
 
-        input[type="text"]:focus,
-        input[type="password"]:focus {
+        input:focus,
+        select:focus {
             border-color: #5d4037;
             outline: none;
             background-color: #fffefc;
@@ -85,56 +82,50 @@
             margin-top: 1rem;
         }
 
-        .test-login {
-            color: green;
-            font-size: 0.95rem;
-            margin-top: 2rem;
-            background-color: #f0f0f0;
-            padding: 1rem;
-            border-left: 4px solid #8d6e63;
-            border-radius: 5px;
-        }
-
-        .test-login code {
-            font-family: monospace;
-            background-color: #fdf6f0;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        .register-link {
+        .login-link {
             text-align: center;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
         }
 
-        .register-link a {
-            color: #5d4037;
+        .login-link a {
+            color: #6d4c41;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login-link a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
-<body >
+<body>
 
-<div class="login-container">
-    <h2>Login</h2>
+<div class="register-container">
+    <h2>Create Your Account</h2>
 
-    <form th:action="@{/login}" method="post">
+    <form th:action="@{/register}" method="post" th:object="${registrationForm}">
         <label>Username:
-            <input type="text" name="username" required />
+            <input type="text" th:field="*{username}" required />
         </label>
         <label>Password:
-            <input type="password" name="password" required />
+            <input type="password" th:field="*{password}" required />
         </label>
-        <button type="submit">Login</button>
+        <label>Select Employee Record:
+            <select th:field="*{employeeId}" required>
+                <option th:each="e : ${employees}"
+                        th:value="${e.id}"
+                        th:text="${e.name + ' (' + e.department + ')'}">
+                </option>
+            </select>
+        </label>
+        <button type="submit">Register</button>
     </form>
 
-    
+    <div th:if="${error}" class="error" th:text="${error}"></div>
 
-    <div th:if="${param.error}" class="error">
-        Invalid username or password.
-    </div>
-    <div class="register-link">
-        New here? <a th:href="@{/register}">Create an account</a>
+    <div class="login-link">
+        Already have an account? <a th:href="@{/login}">Login here</a>
     </div>
 </div>
 

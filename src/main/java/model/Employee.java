@@ -17,6 +17,19 @@ public class Employee {
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<LeaveApplication> leaveApplications;
+    
+    @Enumerated(EnumType.STRING)
+    private SalaryScale salaryScale;
+
+    
+
+	public SalaryScale getSalaryScale() {
+		return salaryScale;
+	}
+
+	public void setSalaryScale(SalaryScale salaryScale) {
+		this.salaryScale = salaryScale;
+	}
 
 	public Long getId() {
 		return id;

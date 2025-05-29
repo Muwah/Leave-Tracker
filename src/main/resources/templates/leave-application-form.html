@@ -1,51 +1,141 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Apply for Leave</title>
-    <link rel="stylesheet" href="/css/brown-theme.css"> <!-- Link to your CSS file -->
+    <title>Application for Leave - PSF 12</title>
+    <link rel="stylesheet" href="/css/brown-theme.css">
 </head>
 <body>
-    <h1>Apply for Leave</h1>
+    <h1>APPLICATION FOR LEAVE (PSF 12)</h1>
+    <p><strong>Note:</strong> This form must be addressed to the Responsible Officer / Head of Department / Division.</p>
+
+    <!-- Flash Messages -->
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
     <form th:action="@{/leaves}" th:object="${leaveApplication}" method="post">
-		 <!-- Employee Dropdown -->
-    <div class="select-wrapper">
-        <label>Employee:</label>
-        <select th:field="*{employee.id}" required>
-            <option value="">Select Employee</option>
-            <option th:each="employee : ${employees}" 
-                    th:value="${employee.id}" 
-                    th:text="${employee.name + ' (' + employee.department + ')'}">
-            </option>
-        </select>
-    </div>
 
-    <!-- Manager Dropdown -->
-    <div class="select-wrapper">
-        <label>Manager:</label>
-        <select th:field="*{manager.id}" required>
-            <option value="">Select Manager</option>
-            <option th:each="manager : ${managers}" 
-                    th:value="${manager.id}" 
-                    th:text="${manager.name}">
-            </option>
-        </select>
-    </div>
-        
+        <!-- SECTION I -->
+        <fieldset>
+            <legend>SECTION I – Application Details</legend>
 
-        <!-- Leave Details -->
-        <label>Leave Type:</label>
-        <input type="text" th:field="*{leaveType}" required><br>
-        <label>Start Date:</label>
-        <input type="date" th:field="*{startDate}" required><br>
-        <label>End Date:</label>
-        <input type="date" th:field="*{endDate}" required><br>
-        <label>Reason:</label>
-        <textarea th:field="*{reason}" required></textarea><br>
-        <button type="submit">Apply</button>
+            <!-- TO -->
+            <div class="select-wrapper">
+                <label for="toOfficer">To:</label>
+                <select th:field="*{toOfficer.id}" required>
+                    <option value="">-- Select Officer --</option>
+                    <option th:each="officer : ${employees}" 
+                            th:value="${officer.id}" 
+                            th:text="${officer.name + ' (' + officer.department + ')'}">
+                    </option>
+                </select>
+            </div>
+
+            <!-- Thru 1 -->
+            <div class="select-wrapper">
+                <label for="thruOfficer1">Thru (1):</label>
+                <select th:field="*{thruOfficer1.id}" required>
+                    <option value="">-- Select Officer --</option>
+                    <option th:each="officer : ${employees}" 
+                            th:value="${officer.id}" 
+                            th:text="${officer.name}">
+                    </option>
+                </select>
+            </div>
+
+            <!-- Thru 2 -->
+            <div class="select-wrapper">
+                <label for="thruOfficer2">Thru (2):</label>
+                <select th:field="*{thruOfficer2.id}" required>
+                    <option value="">-- Select Officer --</option>
+                    <option th:each="officer : ${employees}" 
+                            th:value="${officer.id}" 
+                            th:text="${officer.name}">
+                    </option>
+                </select>
+            </div>
+
+            <!-- Employee Details -->
+            <!-- Employee Dropdown -->
+<div class="select-wrapper">
+    <label for="employee">Name of Applicant:</label>
+    <select id="employeeDropdown" name="employee.id" required onchange="populateEmployeeDetails()">
+        <option value="">-- Select Employee --</option>
+        <option th:each="emp : ${employees}"
+                th:value="${emp.id}"
+                th:data-designation="${emp.designation}"
+                th:data-department="${emp.department}"
+                th:text="${emp.name + ' (' + emp.designation + ', ' + emp.department + ')'}">
+        </option>
+    </select>
+</div>
+
+<!-- Auto-filled Designation -->
+<label>Designation:</label>
+<input type="text" id="designationField" readonly><br>
+
+<!-- Auto-filled Department -->
+<label>Department:</label>
+<input type="text" id="departmentField" readonly><br>
+
+
+            <!-- Leave Type -->
+            <label>Type of Leave:</label>
+            <select th:field="*{leaveType}" required>
+                <option value="">-- Select Leave Type --</option>
+                <option th:each="type : ${leaveTypes}" th:value="${type}" th:text="${type}"></option>
+            </select><br>
+
+            <!-- Salary Scale -->
+            <label>Salary Scale:</label>
+            <select th:field="*{salaryScale}" required>
+                <option value="">-- Select Scale --</option>
+                <option th:each="scale : ${salaryScales}" th:value="${scale}" th:text="${scale}"></option>
+            </select><br>
+
+            <!-- Days Applied -->
+            <label>Leave Days Requested:</label>
+            <input type="number" min="1" th:field="*{daysApplied}" required><br>
+
+            <!-- Dates -->
+            <label>Start Date:</label>
+            <input type="date" th:field="*{startDate}" required><br>
+
+            <label>End Date:</label>
+            <input type="date" th:field="*{endDate}" required><br>
+
+            <!-- Reason -->
+            <label>Reason for Leave:</label>
+            <textarea th:field="*{reason}" rows="3" required></textarea><br>
+
+            <!-- Contact Info -->
+            <label>Leave Address / Phone / Email:</label>
+            <textarea th:field="*{contactInfo}" rows="2" required></textarea><br>
+
+            <!-- Signature & Date -->
+            <label>Date of Application:</label>
+            <input type="date" th:field="*{applicationDate}" required><br>
+
+            <label>Signature of Applicant:</label>
+            <input type="text" th:field="*{signature}" required><br>
+        </fieldset>
+
+        <br>
+        <button type="submit">Submit Application</button>
     </form>
-    <div class="navigation-links">
-        <a th:href="@{/leaves}">Back to Leave List</a>
-        <a th:href="@{/}">Back to Home</a> <!-- Link to the Index page -->
-    </div>
+
+    
+    <script>
+    function populateEmployeeDetails() {
+        const select = document.getElementById('employeeDropdown');
+        const selectedOption = select.options[select.selectedIndex];
+
+        const designation = selectedOption.getAttribute('data-designation') || '';
+        const department = selectedOption.getAttribute('data-department') || '';
+
+        document.getElementById('designationField').value = designation;
+        document.getElementById('departmentField').value = department;
+    }
+</script>
+
 </body>
 </html>

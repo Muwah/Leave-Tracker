@@ -96,3 +96,33 @@ button[type="submit"]:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
+/* Dropdown Styles */
+select {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1.5rem;
+    border: 2px solid #8d6e63; /* Light brown border */
+    border-radius: 5px;
+    font-size: 1rem;
+    color: #5d4037; /* Dark brown text */
+    background-color: #f9f9f9; /* Light background */
+    appearance: none; /* Remove default OS styling */
+    background-image: url("data:image/svg+xml,%3Csvg fill='%235d4037' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+select:focus {
+    border-color: #5d4037; /* Darker border on focus */
+    outline: none;
+    background-color: #fffefc;
+}
+
+/* Optional: Make sure option text inherits styling */
+option {
+    color: #5d4037;
+}
+
